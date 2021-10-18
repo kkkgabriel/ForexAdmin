@@ -1,36 +1,52 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View, FlatList, Button } from 'react-native'
 import Housing from '../components/global/Housing'
 import LineGraph from '../components/account/LineGraph'
 
+import db from '../database/firebaseDB'
+import { ref, onValue, set} from "firebase/database";
+
 const AccountScreen = () => {
 
-	const dummyData = [
-	    {
-	    	'title': 'Account balance',
-	    	'data': [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
-	    },
-	    {
-	    	'title': 'Margin available',
-	    	'data': [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
-	    },
-	    {
-	    	'title': 'P&L',
-	    	'data': [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
-	    }
-	]
+	const [data, setData] = useState([])
+	const accountRef = ref(db, 'account_snapshots')
+
+	const n_latest_data = 100 // set this to settable on ui?
+
+	useEffect(() => {
+		onValue(accountRef, (snapshot) => {
+			const acc_snapshots = Object.values(snapshot.val())
+			const account_balance = acc_snapshots.map((item) => item.balance).slice(0, 150)
+			const margin_available = acc_snapshots.map((item) => item.margin_available).slice(0, 150)
+			const profit_loss = acc_snapshots.map((item) => item.profit_loss).slice(0, 150)
+			setData([
+				{
+					'title': 'Account Balance',
+					'data': account_balance
+				},
+				{
+					'title': 'Margin Available',
+					'data': margin_available
+				},
+				{
+					'title': 'P&L',
+					'data': profit_loss
+				}
+			])
+		})
+	}, [])
 
 	return (
 		<Housing>
 			<FlatList
-				data={dummyData}
+				data={data}
 				renderItem={({ item, index }) => (
 					<LineGraph
-						key={item['title']}
 						title={item['title']}
 						data={item['data']}
 					/>
 				)}
+				keyExtractor={(item, index) => index.toString()}
 				contentContainerStyle={{ paddingTop: 10 }} 
 				showsVerticalScrollIndicator={false}
 				style={{width: '100%', height: '90%'}}

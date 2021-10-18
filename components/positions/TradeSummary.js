@@ -4,8 +4,8 @@ import globalStyles from '../../assets/css/styles'
 
 const TradeSummary = ({ trades }) => {
 	const n_trades = trades.length
-	const pl = trades.reduce((v, trade) => { return trade.pl + v }, 0)
-	const profit = pl > 0
+	const pl = trades.reduce((v, trade) => { return trade.profit_loss + v }, 0)
+	const profit = pl >= 0
 
 	return (
 		<View style={styles.container}>

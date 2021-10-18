@@ -2,10 +2,12 @@ import React from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import globalStyles from '../../assets/css/styles'
 
+import Ctime from '../../utils/ctime'
+
 const PlPanel = ({ pl }) => {
 	return (
 		<View>
-			<Text style={globalStyles.vbig}>{pl}</Text>
+			<Text style={globalStyles.vbig}>{Math.round(pl * 100) / 100}</Text>
 		</View>
 	)
 }
@@ -35,15 +37,18 @@ const ContentPanel = ({
 	close_datetime,
 	closure_reason
 }) => {
+
+	const display_open_datetime = new Ctime().from_datetime_string(open_datetime).to_display_time()
+	const display_close_datetime = new Ctime().from_datetime_string(close_datetime).to_display_time()
 	return (
 		<View>
 			<Text>{instrument}</Text>
 			<Text>{trade_units}</Text>
 			<Text>{long_short}</Text>
 			<Text>{open_price}</Text>
-			<Text>{open_datetime}</Text>
+			<Text>{display_open_datetime}</Text>
 			<Text>{close_price}</Text>
-			<Text>{close_datetime}</Text>
+			<Text>{display_close_datetime}</Text>
 			<Text>{closure_reason}</Text>
 		</View>
 	)

@@ -16,6 +16,7 @@ import Account from './screens/Account';
 // icons
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
+// import './database/firebaseDB'
 
 // const AppWrapper = () => {
 //    return (
@@ -31,7 +32,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='Trades'
+        initialRouteName='Account'
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;

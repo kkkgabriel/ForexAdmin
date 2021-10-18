@@ -1,75 +1,30 @@
-import React, { useState }from 'react'
+import React, { useState, useEffect }from 'react'
 import { Text, View, Button, FlatList } from 'react-native'
 import Housing from '../components/global/Housing'
 import DatePicker from '../components/positions/DatePicker';
 import TradeItem from '../components/positions/TradeItem'
 import TradesSummary from '../components/positions/TradeSummary'
 
-const TradesScreen = () => {
-	const [date, setDate] = useState(Date.now())
+import Ctime from '../utils/ctime'
 
-	const trades = [
-		{	
-			key: 1,
-			instrument: 'EUR_USD',
-			pl: 8.5,
-			trade_units: 1000,
-			long_short:'long',
-			open_price: 1.612,
-			open_datetime: '2021-10-13 16:00:00',
-			close_price: 1.623,
-			close_datetime:'2021-10-13 16:00:00',
-			closure_reason: 'temination triggered'
-		},
-		{
-			key: 2,
-			instrument: 'EUR_USD',
-			pl: -81.23,
-			trade_units: 1000,
-			long_short:'long',
-			open_price: 1.612,
-			open_datetime: '2021-10-13 16:00:00',
-			close_price: 1.623,
-			close_datetime:'2021-10-13 16:00:00',
-			closure_reason: 'temination triggered'
-		},
-		{
-			key: 3,
-			instrument: 'EUR_USD',
-			pl: 2,
-			trade_units: 1000,
-			long_short:'long',
-			open_price: 1.612,
-			open_datetime: '2021-10-13 16:00:00',
-			close_price: 1.623,
-			close_datetime:'2021-10-13 16:00:00',
-			closure_reason: 'temination triggered'
-		},
-		{
-			key: 4,
-			instrument: 'EUR_USD',
-			pl: 8.123,
-			trade_units: 1000,
-			long_short:'long',
-			open_price: 1.612,
-			open_datetime: '2021-10-13 16:00:00',
-			close_price: 1.623,
-			close_datetime:'2021-10-13 16:00:00',
-			closure_reason: 'temination triggered'
-		},
-		{
-			key: 5,
-			instrument: 'EUR_USD',
-			pl: 2222.232,
-			trade_units: 1000,
-			long_short:'long',
-			open_price: 1.612,
-			open_datetime: '2021-10-13 16:00:00',
-			close_price: 1.623,
-			close_datetime:'2021-10-13 16:00:00',
-			closure_reason: 'temination triggered'
-		},
-	]
+import db from '../database/firebaseDB'
+import { ref, onValue, set} from "firebase/database";
+
+const TradesScreen = () => {
+	const [date, setDate] = useState(new Date())
+	const [trades, setTrades] = useState([])
+
+	const tradesRef = ref(db, 'positions')
+
+	useEffect(() => {
+		onValue(tradesRef, (snapshot) => {
+			const tradesToday = Object.values(snapshot.val()).filter((trades) => {
+				return !trades.open && trades.date_close == new Ctime().from_date_obj(date).to_date_string()
+			})
+			tradesToday.reverse()
+			setTrades(tradesToday)
+		})
+	}, [date])
 
 	return (
 		<Housing
@@ -87,18 +42,18 @@ const TradesScreen = () => {
 				data={trades}
 				renderItem={({ item } ) => (
 					<TradeItem
-						key={item.key}
 						instrument={item.instrument}
-						pl={item.pl}
-						trade_units={item.trade_units}
+						pl={item.profit_loss}
+						trade_units={item.amount}
 						long_short={item.long_short}
 						open_price={item.open_price}
-						open_datetime={item.open_datetime}
+						open_datetime={item.datetime_open}
 						close_price={item.close_price}
-						close_datetime={item.close_datetime}
+						close_datetime={item.datetime_close}
 						closure_reason={item.closure_reason}
 					/>
 				)}
+				keyExtractor={(item, index) => index.toString()}
 			/>
 		</Housing>
 	)

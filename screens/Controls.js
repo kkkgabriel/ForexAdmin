@@ -1,18 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View } from 'react-native'
 import Housing from '../components/global/Housing'
 import BigButton from '../components/controls/BigButton'
-import firebase from "../database/firebaseDB"
 
+import db from '../database/firebaseDB'
+import { ref, onValue, set} from "firebase/database";
 
 const ControlsScreen = () => {
+
 
 	const [open, setOpen] = useState(false)
 	const [live, setLive] = useState(false)
 
-	const toggleOpen = () => setOpen(!open) // todo: call api
+	const liveRef = ref(db, 'bits/live')
+	const openRef = ref(db, 'bits/open')
 
-	const toggleLive = () => setLive(!live) // todo: call api
+	useEffect(()=>{
+		onValue(liveRef, (snapshot) => setLive(snapshot.val()))
+		onValue(openRef, (snapshot) => setOpen(snapshot.val()))
+	}, [])
+
+
+	const toggleOpen = () => set(openRef, !open)
+	
+	const toggleLive = () => set(liveRef, !live)
 
 	return (
 		<Housing>
