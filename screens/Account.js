@@ -16,21 +16,26 @@ const AccountScreen = () => {
 	useEffect(() => {
 		onValue(accountRef, (snapshot) => {
 			const acc_snapshots = Object.values(snapshot.val())
-			const account_balance = acc_snapshots.map((item) => item.balance).slice(0, 150)
-			const margin_available = acc_snapshots.map((item) => item.margin_available).slice(0, 150)
-			const profit_loss = acc_snapshots.map((item) => item.profit_loss).slice(0, 150)
+			const account_balance = acc_snapshots.map((item) => item.balance).slice(-150)
+			const margin_available = acc_snapshots.map((item) => item.margin_available).slice(-150)
+			const profit_loss = acc_snapshots.map((item) => item.profit_loss).slice(-150)
+			const margin_used = acc_snapshots.map((item) => item.margin_used).slice(-150)
 			setData([
 				{
 					'title': 'Account Balance',
 					'data': account_balance
 				},
 				{
+					'title': 'P&L',
+					'data': profit_loss
+				},
+				{
 					'title': 'Margin Available',
 					'data': margin_available
 				},
 				{
-					'title': 'P&L',
-					'data': profit_loss
+					'title': 'Margin Used',
+					'data': margin_used
 				}
 			])
 		})
