@@ -12,6 +12,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Controls from './screens/Controls';
 import Trades from './screens/Trades';
 import Account from './screens/Account';
+import Positions from './screens/Positions';
 
 // icons
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -32,7 +33,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='Account'
+        initialRouteName='Trades'
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -40,15 +41,18 @@ const App = () => {
               iconName = 'power-off'
             } else if (route.name === 'Trades') {
               iconName = 'list';
-            } else if ( route.name === 'Account' ) {
+            } else if (route.name === 'Account') {
               iconName = 'user-circle';
-            } 
+            } else if (route.name === 'Positions') {
+              iconName = 'map-pin'
+            }
 
             return <FontAwesome name={iconName} size={size} color={color} />;
             },
           })}
       >
         <Tab.Screen name="Controls" component={Controls} />
+        <Tab.Screen name="Positions" component={Positions} />
         <Tab.Screen name="Trades" component={Trades} />
         <Tab.Screen name="Account" component={Account} />
       </Tab.Navigator>
