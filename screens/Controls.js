@@ -10,20 +10,30 @@ const ControlsScreen = () => {
 
 
 	const [open, setOpen] = useState(false)
-	const [live, setLive] = useState(false)
+	const [close, setClose] = useState(false)
 
-	const liveRef = ref(db, 'bits/live')
 	const openRef = ref(db, 'bits/open')
+	const closeRef = ref(db, 'bits/close')
 
 	useEffect(()=>{
-		onValue(liveRef, (snapshot) => setLive(snapshot.val()))
 		onValue(openRef, (snapshot) => setOpen(snapshot.val()))
+		onValue(closeRef, (snapshot) => setClose(snapshot.val()))
 	}, [])
 
 
-	const toggleOpen = () => set(openRef, !open)
+	const toggleOpen = () => {
+		set(openRef, !open)
+		if (close) {
+			set(closeRef, false)
+		}
+	}
 	
-	const toggleLive = () => set(liveRef, !live)
+	const toggleClose = () => {
+		if (!close) {
+			set(openRef, false)
+		}
+		set(closeRef, !close)
+	}
 
 	return (
 		<Housing>
@@ -33,9 +43,9 @@ const ControlsScreen = () => {
 				onPress={toggleOpen}
 			/>
 			<BigButton
-				text='Live'
-				value={live}
-				onPress={toggleLive}
+				text='Close all'
+				value={close}
+				onPress={toggleClose}
 			/>
 		</Housing>
 	)
