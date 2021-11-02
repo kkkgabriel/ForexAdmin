@@ -1,5 +1,5 @@
 import React, { useState, useEffect }from 'react'
-import { Text, View, Button, FlatList } from 'react-native'
+import { Text, View, Button, FlatList, TouchableOpacity } from 'react-native'
 import Housing from '../components/global/Housing'
 import DatePicker from '../components/positions/DatePicker';
 import TradeItem from '../components/positions/TradeItem'
@@ -10,21 +10,31 @@ import Ctime from '../utils/ctime'
 import db from '../database/firebaseDB'
 import { ref, onValue, set} from "firebase/database";
 
-const TradesScreen = () => {
+const TradesScreen = ({ navigation }) => {
 	const [date, setDate] = useState(new Date())
 	const [closedTrades, setClosedTrades] = useState([])
 	const [openTrades, setOpenTrades] = useState([])
 
 	const tradesRef = ref(db, 'positions')
 
+	const compareDate = (a, b) => {
+		if (a.datetime_close > b.datetime_close) {
+			return -1
+		} else {
+			return 1
+		}
+	}
+
 	useEffect(() => {
 		onValue(tradesRef, (snapshot) => {
 			let allTrades = Object.values(snapshot.val())
 			allTrades.reverse()
 
-			let closedTrades = allTrades.filter((trades) => {
+			let closedTrades = allTrades
+			.filter((trades) => {
 				return !trades.open && trades.date_close == new Ctime().from_date_obj(date).to_date_string()
 			})
+			.sort((a, b) => compareDate(a, b))
 
 			let openTrades = allTrades.filter((trades) => {
 				return trades.open
@@ -43,10 +53,15 @@ const TradesScreen = () => {
 				date={date}
 				setDate={setDate}
 			/>
-			<TradesSummary
-				openTrades={openTrades}
-				closedTrades={closedTrades}
-			/>
+			<TouchableOpacity
+				style={{ width: '100%' }}
+				onPress={() => navigation.navigate('Positions') }
+			>
+				<TradesSummary
+					openTrades={openTrades}
+					closedTrades={closedTrades}
+				/>
+			</TouchableOpacity>
 			<FlatList
 				style={{width: '100%'}}
 				data={closedTrades}
